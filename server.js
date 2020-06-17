@@ -12,6 +12,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(userAuth)
 
+app.get('/', (req, res) => {
+    res.status(200).send({
+        message: "working"
+    })
+})
+
+console.log(process.env.NODE_ENV)
 
 models.sequelize.sync().then((result) => {
 
