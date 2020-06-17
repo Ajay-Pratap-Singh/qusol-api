@@ -1,37 +1,87 @@
 const express = require('express');
-
 const router = express.Router()
 const bcrypt = require('bcryptjs')
-const { User } = require('../../models')
-
 const { Op } = require("sequelize");
-
 const jwt = require('jsonwebtoken')
+const { check, validationResult } = require('express-validator')
 
+const { User } = require('../../models')
 const { verifyToken } = require('../../middlewares/auth')
 
 // @POST 
 // User registration
-router.post('/register', (req, res) => {
-    const { username, email, password, confirm_password } = req.body
+router.post('/register',
 
-    const user = {
-        username, email, password
-    }
+    [
+        check('email', 'E-mail is invalid').trim().isEmail().normalizeEmail().custom(value => {
+            return User.findOne({ where: { email: value } }).then(user => {
+                if (user) {
+                    return Promise.reject('E-mail already in use')
+                }
+            })
+        }),
+        check('username', 'Username can contain only letters A-Z, numbers 0-9  and length no more than is 15')
+            .trim()
+            .isLength({ min: 1, max: 15 })
+            .custom(value => {
+                return User.findOne({ where: { username: value } }).then(user => {
+                    if (user) {
+                        return Promise.reject('Username already taken')
+                    }
+                })
+            }),
+        check('password', 'Password should be atleast 8').trim()
+            .isLength({ min: 8 }).withMessage('Password should be atleast 8')
+            .isLength({ max: 40 }).withMessage('Password can not exceed 40 characters')
+            .custom((value, { req }) => {
+                if (req.body.confirm_password !== value) {
+                    throw new Error('Password confirmation is incorrect');
+                }
+            })
+
+    ]
+    ,
 
 
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, (err, hash) => {
-            user.password = hash
-            User.create(user).then((result) => {
-                res.status(201).send({ error: false, message: "registration successfull" })
-            }).catch((err) => {
-                console.log(err);
+    (req, res) => {
+        const { username, email, password } = req.body
+
+        const user = {
+            username, email, password
+        }
+
+        // error processing
+        const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
+            // return `${location}[${param}]: ${msg}`;
+            return msg
+        };
+
+        const errors = validationResult(req).formatWith(errorFormatter);
+        if (!errors.isEmpty()) {
+            return res.status(422).send({
+                error: true,
+                msg: 'Please review the errors',
+                body: errors.mapped()
             });
-        })
-    })
+        }
+        // error processing ends here
 
-})
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(password, salt, (err, hash) => {
+                user.password = hash
+                User.create(user).then((result) => {
+                    res.status(201).send({ error: false, msg: "registration successfull" })
+                }).catch((err) => {
+                    console.log(err);
+                });
+            })
+        })
+
+    }
+)
+
+
+
 
 // @POST 
 // User Login
@@ -46,14 +96,14 @@ router.post('/login', (req, res) => {
         }
     }).then(user => {
         if (!user) {
-            return res.status(401).send({ error: true, message: "Invalid Credentials" })
+            return res.status(401).send({ error: true, msg: "Invalid Credentials" })
         }
         foundUser = user
         return bcrypt.compare(password, user.password)
 
     }).then((isEqual) => {
         if (!isEqual) {
-            return res.status(401).send({ error: true, message: "Invalid Credentials" })
+            return res.status(401).send({ error: true, msg: "Invalid Credentials" })
         }
         //  token generation
         const token = jwt.sign(
@@ -65,7 +115,7 @@ router.post('/login', (req, res) => {
 
         return res.header('Authorization', 'Bearer ' + token).send({
             error: false,
-            message: "login successful",
+            msg: "login successful",
             body: {
                 username: `${foundUser.username}`,
                 email: `${foundUser.email}`
@@ -82,7 +132,7 @@ router.post('/login', (req, res) => {
 router.get('/hello', verifyToken, (req, res) => {
     const username = req.user.username;
 
-    res.send({ message: `hello, ${username}` })
+    res.send({ msg: `hello, ${username}` })
 })
 
 
