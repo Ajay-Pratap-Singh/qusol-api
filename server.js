@@ -2,7 +2,7 @@ const express = require('express');
 const app = express()
 const bodyParser = require('body-parser')
 const models = require('./models')
-require('dotenv').config()
+if (app.get('env') == 'development') { require('dotenv').config(); }
 const userAuth = require('./routes/auth/auth')
 
 const PORT = process.env.PORT || 3000
@@ -18,7 +18,6 @@ app.get('/', (req, res) => {
     })
 })
 
-console.log(process.env.NODE_ENV)
 
 models.sequelize.sync().then((result) => {
 
