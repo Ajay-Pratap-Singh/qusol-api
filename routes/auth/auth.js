@@ -8,6 +8,12 @@ const { check, validationResult } = require('express-validator')
 const { User } = require('../../models')
 const { verifyToken } = require('../../middlewares/auth')
 
+
+const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
+    // return `${location}[${param}]: ${msg}`;
+    return msg
+};
+
 // @POST 
 // User registration
 router.post('/register',
@@ -30,12 +36,15 @@ router.post('/register',
                     }
                 })
             }),
-        check('password', 'Password should be atleast 8').trim()
+        check('password', 'Password is required').trim()
             .isLength({ min: 8 }).withMessage('Password should be atleast 8')
             .isLength({ max: 40 }).withMessage('Password can not exceed 40 characters')
             .custom((value, { req }) => {
-                if (req.body.confirm_password !== value) {
-                    throw new Error('Password confirmation is incorrect');
+                if (req.body.confirm_password.trim() !== value) {
+                    console.log('here');
+                    throw new Error('Password confirmation is incorrect')
+                } else {
+                    return true
                 }
             })
 
@@ -44,17 +53,9 @@ router.post('/register',
 
 
     (req, res) => {
-        const { username, email, password } = req.body
 
-        const user = {
-            username, email, password
-        }
 
         // error processing
-        const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
-            // return `${location}[${param}]: ${msg}`;
-            return msg
-        };
 
         const errors = validationResult(req).formatWith(errorFormatter);
         if (!errors.isEmpty()) {
@@ -65,6 +66,12 @@ router.post('/register',
             });
         }
         // error processing ends here
+
+        const { username, email, password } = req.body
+
+        const user = {
+            username, email, password
+        }
 
         bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, (err, hash) => {
@@ -82,10 +89,27 @@ router.post('/register',
 
 
 
-
 // @POST 
 // User Login
-router.post('/login', (req, res) => {
+router.post('/login', [
+    check('username_or_email', 'missing username or email').trim().notEmpty(),
+    check('password', 'missing password').trim().notEmpty(),
+], (req, res) => {
+
+
+    // error processing
+    const errors = validationResult(req).formatWith(errorFormatter);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).send({
+            error: true,
+            msg: 'Please review the errors',
+            body: errors.mapped()
+        });
+    }
+    // error processing ends here
+
+
     const { username_or_email, password } = req.body;
 
     let foundUser
@@ -124,7 +148,7 @@ router.post('/login', (req, res) => {
 
 
     }).catch(err => {
-        console.log(err);
+        // console.log(err);
     })
 
 })
