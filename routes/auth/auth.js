@@ -18,7 +18,7 @@ const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
 router.post('/register',
 
     [
-        check('email', 'E-mail is invalid').trim().normalizeEmail().isEmail().custom(value => {
+        check('email', 'E-mail is invalid').trim().isEmail().normalizeEmail().custom(value => {
             return User.findOne({ email: value }).then(user => {
                 if (user) {
                     return Promise.reject('E-mail already in use')
@@ -39,8 +39,12 @@ router.post('/register',
             .isLength({ min: 8 }).withMessage('Password should be atleast 8')
             .isLength({ max: 40 }).withMessage('Password can not exceed 40 characters')
             .custom((value, { req }) => {
-                if (req.body.confirm_password.trim() !== value) {
-                    throw new Error('Password confirmation is incorrect')
+                const { confirm_password } = req.body
+                if (!confirm_password) {
+                    throw new Error('Password confirmation is required')
+                }
+                else if (confirm_password.trim() !== value) {
+                    throw new Error('Passwords does not match')
                 } else {
                     return true
                 }
@@ -54,6 +58,7 @@ router.post('/register',
 
 
         // error processing
+        console.log(validationResult(req).array())
 
         const errors = validationResult(req).formatWith(errorFormatter);
         if (!errors.isEmpty()) {
