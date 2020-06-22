@@ -4,7 +4,7 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
-const User = require('../../models/user/user')
+const User = require('../../models/userModals/user')
 const { verifyToken } = require('../../middlewares/auth')
 
 
