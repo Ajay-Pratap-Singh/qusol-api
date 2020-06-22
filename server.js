@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express()
 const bodyParser = require('body-parser')
-const models = require('./models')
+const connectDB = require('./connect/index')
 if (app.get('env') == 'development') { require('dotenv').config(); }
 const userAuth = require('./routes/auth/auth')
 
@@ -25,9 +25,8 @@ app.get('/', (req, res) => {
 })
 
 
-models.sequelize.sync().then((result) => {
-
+connectDB(() => {
     app.listen(PORT, () => {
-        console.log(`on ${PORT}`);
+        console.log(`server running on ${PORT}`);
     })
 })

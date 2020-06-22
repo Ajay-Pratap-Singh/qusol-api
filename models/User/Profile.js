@@ -1,67 +1,54 @@
-module.exports = (sequelize, DataTypes) => {
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
-
-    const Profile = sequelize.define('profile', {
-        full_name: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        cover_image: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        profile_image: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        bio: {
-            type: DataTypes.TEXT,
-            allowNull: true
-        },
-        phone_number_country_code: {
-            type: DataTypes.CHAR,
-            allowNull: true
-        },
-        phone_number: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        country: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        state: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        city: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        zipcode: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        street_address: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        education: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        currently_employed: {
-            type: DataTypes.STRING,
-            allowNull: true
+const ProfileSchema = new Schema({
+    full_name: String,
+    cover_image: String,
+    profile_image: String,
+    bio: String,
+    contact: {
+        country_code: String,
+        phone_number: String
+    },
+    address: {
+        country: String,
+        city: String,
+        zipcode: Number,
+        address_line: String,
+    },
+    education: [
+        {
+            school: String,
+            degree: String,
+            area_of_study: String,
+            from: String,
+            to: String,
+            current: Boolean,
+            description: String,
         }
-    })
+    ],
+    employement: [
+        {
+            title: String,
+            company: String,
+            location: String,
+            role: String,
+            from: String,
+            to: String,
+            current: Boolean,
+            description: String,
+        }
+    ],
+    interests: [String],
+    skills: [String],
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
+}, {
+    timestamps: true
+})
 
-    Profile.associate = (models) => {
-        Profile.belongsTo(models.User);
-        Profile.hasMany(models.Hobby)
-    };
 
-    return Profile
-    // Categories in which he is expert
-    // Hobbies/Interests
-}
+module.exports = mongoose.model('Profile', ProfileSchema) 
