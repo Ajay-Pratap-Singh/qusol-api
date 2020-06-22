@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router()
 
-const { Op } = require("sequelize");
 const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
