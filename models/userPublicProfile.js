@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Schema.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const publicProfileSchema = new mongoose.Schema({
     uid:{
@@ -11,9 +11,13 @@ const publicProfileSchema = new mongoose.Schema({
         type:String,
         trim:true
     },
-    imgThumbUrl:{
+    userName:{
         type:String,
-        default:""//enter default user thumbnail when no profile picture given
+        trim:true
+    },
+    profileImageUrl:{
+        type:String,
+        default:""////put default profile image file url
     }
 });
 

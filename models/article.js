@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
-const ObjectId=mongoose.Schema.ObjectId;
+const ObjectId=mongoose.Schema.Types.ObjectId;
 const userPublicProfile = require('./userPublicProfile');
 
-//these are posts for blogs we will be keeping everthing separate
-
 const articleSchema = new mongoose.Schema({
-    writtenBy:userPublicProfile,
+    author:userPublicProfile,
     title:{
         type:String,
     },
@@ -28,8 +26,29 @@ const articleSchema = new mongoose.Schema({
         {
             timestamps:true
         }
+    ],
+    tags:[
+        {
+            tagid:{
+                type:ObjectId,
+                ref:'Tag'
+            },
+            text:{
+                type:String
+            }
+        }
+    ],
+    categories:[
+        {
+            catid:{
+                type:ObjectId,
+                ref:'Category'
+            },
+            name:{
+                type:String
+            }
+        }
     ]
-    //comments:[]    Do You want to cross reference root comments (array of commentIDs) here???
 }, {
     timestamps:true
 });

@@ -1,14 +1,9 @@
-// to dos
-// 1 make a model
 const mongoose = require('mongoose');
-const ObjectId=mongoose.Schema.ObjectId;
+const ObjectId=mongoose.Schema.Types.ObjectId;
+const userPublicProfile = require('./userPublicProfile');
 
 const quesSchema = new mongoose.Schema({
-    uid:{
-        type:ObjectId,
-        ref:'User',
-        required:true
-    },
+    author:userPublicProfile,
     body:{
         type:String,
         required:true
@@ -28,32 +23,17 @@ const quesSchema = new mongoose.Schema({
         default:false
     },
     upvotes:[
+        userPublicProfile,
         {
-            uid:{
-                type:ObjectId,
-                ref:'User',
-                unique:true
-            },
-            displayName:{
-                type:String,
-                trim:true
-            }
+            timestamps:true
         }
     ],
     downvotes:[
+        userPublicProfile,
         {
-            uid:{
-                type:ObjectId,
-                ref:'User',
-                unique:true
-            },
-            displayName:{
-                type:String,
-                trim:true
-            }
+            timestamps:true
         }
     ],
-    //comments:[]    Do You want to cross reference root comments(array of commentIDs) here???
     tags:[
         {
             tagid:{
