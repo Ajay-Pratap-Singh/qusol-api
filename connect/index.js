@@ -10,11 +10,11 @@ mongoose.set('useUnifiedTopology', true);
 
 let url;
 
-if (process.env.NODE_ENV && process.env.NODE_ENV === "production") {
-    url = process.env.MONGODB_URI
-} else {
-    url = 'mongodb://localhost:27017/qusol'
-}
+url = process.env.MONGODB_URI
+// if (process.env.NODE_ENV && process.env.NODE_ENV === "production") {
+// } else {
+//     url = 'mongodb://localhost:27017/qusol'
+// }
 
 const connectDB = (cb) => {
     mongoose.connect(url).then(() => {

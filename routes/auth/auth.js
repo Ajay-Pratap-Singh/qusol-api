@@ -4,7 +4,7 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
-const User = require('../../models/userModals/user')
+const User = require('../../models/user')
 const { verifyToken } = require('../../middlewares/auth')
 
 
@@ -38,21 +38,8 @@ router.post('/register',
         check('password', 'Password is required').trim()
             .isLength({ min: 8 }).withMessage('Password should be atleast 8')
             .isLength({ max: 40 }).withMessage('Password can not exceed 40 characters')
-            .custom((value, { req }) => {
-                const { confirm_password } = req.body
-                if (!confirm_password) {
-                    throw new Error('Password confirmation is required')
-                }
-                else if (confirm_password.trim() !== value) {
-                    throw new Error('Passwords does not match')
-                } else {
-                    return true
-                }
-            })
-
     ]
     ,
-
 
     (req, res) => {
 
