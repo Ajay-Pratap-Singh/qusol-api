@@ -1,27 +1,24 @@
-// to dos
-// 1 make a model
 const mongoose = require('mongoose');
 const ObjectId=mongoose.Schema.ObjectId;
 
-const quesSchema = new mongoose.Schema({
+//these are posts for blogs we will be keeping everthing separate
+
+const postSchema = new mongoose.Schema({
     uid:{
         type:ObjectId,
         ref:'User',
         required:true
     },
+    title:{
+        type:String,
+    },
     body:{
         type:String,
         required:true
     },
-    answers:[
-        {
-            type:ObjectId,
-            ref:'Answer'
-        }
-    ],
-    isAnonymous:{
-        type:Boolean,
-        default:false
+    blogid:{
+        type:ObjectId,
+        ref:'Blog'
     },
     isDeleted:{
         type:Boolean,
@@ -38,6 +35,8 @@ const quesSchema = new mongoose.Schema({
                 type:String,
                 trim:true
             }
+        },{
+            timestamps:true
         }
     ],
     downvotes:[
@@ -51,35 +50,15 @@ const quesSchema = new mongoose.Schema({
                 type:String,
                 trim:true
             }
-        }
-    ],
-    //comments:[]    Do You want to cross reference root comments(array of commentIDs) here???
-    tags:[
-        {
-            tagid:{
-                type:ObjectId,
-                ref:'Tag'
-            },
-            text:{
-                type:String
-            }
-        }
-    ],
-    categories:[
-        {
-            catid:{
-                type:ObjectId,
-                ref:'Category'
-            },
-            name:{
-                type:String
-            }
+        },{
+            timestamps:true
         }
     ]
+    //comments:[]    Do You want to cross reference root comments (array of commentIDs) here???
 }, {
     timestamps:true
 });
 
-const Question = mongoose.model('Question', quesSchema);
+const Answer = mongoose.model('Answer', ansSchema);
 
-module.exports=Question;
+module.exports=Answer;
