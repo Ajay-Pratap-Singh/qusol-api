@@ -1,24 +1,18 @@
 const mongoose = require('mongoose');
 const ObjectId=mongoose.Schema.ObjectId;
+const userPublicProfile = require('./userPublicProfile');
 
 //these are posts for blogs we will be keeping everthing separate
 
-const postSchema = new mongoose.Schema({
-    uid:{
-        type:ObjectId,
-        ref:'User',
-        required:true
-    },
-    title:{
+const commentSchema = new mongoose.Schema({
+    by:userPublicProfile,
+    on:{
         type:String,
+        required:true
     },
     body:{
         type:String,
         required:true
-    },
-    blogid:{
-        type:ObjectId,
-        ref:'Blog'
     },
     isDeleted:{
         type:Boolean,
@@ -59,6 +53,6 @@ const postSchema = new mongoose.Schema({
     timestamps:true
 });
 
-const Post  = mongoose.model('Post', postSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 
-module.exports=Post;
+module.exports=Comment;
