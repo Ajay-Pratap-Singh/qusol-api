@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
-    userName: {
+    username: {
         type: String,
         unique: true,
         required: true
@@ -56,12 +56,13 @@ const userSchema = new mongoose.Schema({
         }
     ],
     interests: [String],
-    skills: [String]}, 
+    skills: [String]
+},
     {
-    timestamps: true
-})
+        timestamps: true
+    })
 
-UserSchema.pre('save', function (next) {
+userSchema.pre('save', function (next) {
     let user = this;
     if (user.isModified('password')) {
         bcrypt.genSalt(12, (err, salt) => {
@@ -77,7 +78,7 @@ UserSchema.pre('save', function (next) {
 })
 
 // token generation
-UserSchema.methods.generateAuthToken = function () {
+userSchema.methods.generateAuthToken = function () {
     let user = this
     let token = jwt.sign(
         { username: user.username, _id: user._id.toString() },

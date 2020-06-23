@@ -3,7 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const connectDB = require('./connect/index')
 if (app.get('env') == 'development') { require('dotenv').config(); }
-const userAuth = require('./routes/auth/auth')
+const userAuth = require('./routes/auth')
 
 const PORT = process.env.PORT || 3000
 app.use(bodyParser.json())
