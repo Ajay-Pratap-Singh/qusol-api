@@ -33,6 +33,13 @@ const commentSchema = new mongoose.Schema({
     timestamps:true
 });
 
+commentSchema.methods.toJSON = function () {
+    const comment = this
+    const commentObject = comment.toObject()
+    delete commentObject.isDeleted
+    return userObject
+}
+
 const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports=Comment;
