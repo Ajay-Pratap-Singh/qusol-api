@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const userPublicProfile = require('./userPublicProfile');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const commentSchema = new mongoose.Schema({
     author:userPublicProfile,
-    on:{
+    parentType:{
         type:String,
         required:true
+    },
+    pid:{
+        type:ObjectId
     },
     body:{
         type:String,

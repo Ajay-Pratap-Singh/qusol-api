@@ -19,6 +19,8 @@ const publicProfileSchema = new mongoose.Schema({
         type:String,
         default:""////put default profile image file url
     }
+},{
+    _id:false
 });
 
 module.exports = publicProfileSchema;
