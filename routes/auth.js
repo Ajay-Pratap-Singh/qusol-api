@@ -4,8 +4,8 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
-const User = require('../../models/user')
-const { verifyToken } = require('../../middlewares/auth')
+const User = require('../models/user')
+const { verifyToken } = require('../middlewares/auth')
 
 
 const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
