@@ -36,6 +36,18 @@ const ansSchema = new mongoose.Schema({
     timestamps:true
 });
 
+ansSchema.methods.toJSON = function () {
+    const ans = this
+    const ansObject = ans.toObject()
+
+    delete ansObject.isDeleted
+    if(ansObject.isAnonymous)
+        delete ansObject.author
+    delete ansObject.isAnonymous
+
+    return userObject
+}
+
 const Answer = mongoose.model('Answer', ansSchema);
 
 module.exports=Answer;
