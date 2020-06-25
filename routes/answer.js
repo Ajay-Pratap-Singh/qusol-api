@@ -3,9 +3,20 @@ const Answer = require('../models/answer')
 const verifyToken = require('../middlewares/auth')
 const router = new express.Router()
 
+//for getting all anwsers of a question
+//pagination afterwards
+router.get('question/:id/answers', verifyToken, async (req, res) => {
+    const question = req.params.id
 
-router.get('/answers', verifyToken, async (req, res) => {
-    //for getting all anwsers of a question
+    try {
+        const anwers = await Answer.find({ question })
+        if (!answers) {
+            return res.status(404).send()
+        }
+        res.send(answers)
+    } catch (e) {
+        res.status(500).send()
+    }
 })
 
 //to get one particular answer [authentication not needed]
