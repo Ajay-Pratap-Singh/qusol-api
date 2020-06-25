@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     isDeleted: Boolean,
     isVerified: Boolean,
-    displayName: String,
+    displayname: String,
     coverImageUrl: String,
     profileImageUrl: String,
     bio: String,
@@ -81,7 +81,7 @@ userSchema.pre('save', function (next) {
 userSchema.methods.generateAuthToken = function () {
     let user = this
     let token = jwt.sign(
-        { username: user.username, _id: user._id.toString() },
+        { username: user.username, uid: user._id.toString(), displayname:user.displayname,profileImageUrl:user.profileImageUrl },
         process.env.SECRET,
         { expiresIn: '1h' }
     )

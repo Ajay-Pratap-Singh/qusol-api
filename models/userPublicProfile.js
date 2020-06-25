@@ -7,11 +7,11 @@ const publicProfileSchema = new mongoose.Schema({
         ref:'User',
         required:true
     },
-    diplayName:{
+    diplayname:{
         type:String,
         trim:true
     },
-    userName:{
+    username:{
         type:String,
         trim:true
     },

@@ -1,5 +1,6 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-
+const user = require('../models/user');
 
 verifyToken = (req, res, next) => {
     const headerBody = req.header('Authorization')
@@ -16,17 +17,19 @@ verifyToken = (req, res, next) => {
             if (error) {
                 return res.status(401).json({ error: true, message: 'Token is not valid' });
             } else {
-                req.user = { username: decoded.username, _id: decoded._id };
+                req.user = { 
+                    uid: mongoose.Types.ObjectId(decoded.uid), 
+                    username: decoded.username, 
+                    displayname:decoded.displayname, 
+                    profileImageUrl:decoded.profileImageUrl
+                };
                 next();
             }
         });
 
     } catch (error) {
         console.log(error);
-
     }
-
-
 }
 
 module.exports = {
