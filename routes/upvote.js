@@ -10,7 +10,7 @@ const Post = require('../models/post')
 const Article = require('../models/article')
 const Comment = require('../models/comment')
 const User = require('../models/user')
-const { verifyToken } = require('../middlewares/auth');
+const verifyToken = require('../middlewares/auth');
 
 
 

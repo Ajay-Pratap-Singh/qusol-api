@@ -7,8 +7,8 @@ if (app.get('env') == 'development') { require('dotenv').config(); }
 
 const authRoutes = require('./routes/auth')
 const commentRoutes = require('./routes/comment')
-// const upvoteRoutes = require('./routes/upvote')
-// const quesRoutes = require('./routes/question')
+const upvoteRoutes = require('./routes/upvote')
+const quesRoutes = require('./routes/question')
 const ansRoutes = require('./routes/answer')
 
 const PORT = process.env.PORT || 3000
@@ -27,10 +27,10 @@ console.log('1');
 app.use(authRoutes)
 console.log('2');
 app.use(commentRoutes)
-// console.log('3');
-// app.use(upvoteRoutes)
-// console.log('4');
-// app.use(quesRoutes)
+console.log('3');
+app.use(upvoteRoutes)
+console.log('4');
+app.use(quesRoutes)
 console.log('5');
 app.use(ansRoutes)
 

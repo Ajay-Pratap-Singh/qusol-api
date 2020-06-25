@@ -7,7 +7,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const Question = require('../models/question')
 const Answer = require('../models/answer')
 const User = require('../models/user')
-const { verifyToken } = require('../middlewares/auth');
+const verifyToken = require('../middlewares/auth');
 
 
 
