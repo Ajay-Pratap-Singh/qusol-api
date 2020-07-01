@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
 const User = require('../models/user')
-const verifyToken= require('../middlewares/auth')
+const verifyToken = require('../middlewares/auth')
 
 
 const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
@@ -67,12 +67,10 @@ router.post('/register',
             const token = user.generateAuthToken()
 
             return res.status(201)
-                .header('Authorization', 'Bearer ' + token)
                 .send({
                     error: false, msg: "registration successfull",
                     body: {
-                        username: `${user.username}`,
-                        email: `${user.email}`
+                        jwt: token
                     }
                 })
         }).catch((e) => {
@@ -86,25 +84,9 @@ router.post('/register',
 
 // @POST 
 // User Login
-router.post('/login', [
-    check('username_or_email', 'missing username or email').trim().notEmpty(),
-    check('password', 'missing password').trim().notEmpty(),
-], (req, res) => {
+router.post('/login', (req, res) => {
 
-    // error processing
-    const errors = validationResult(req).formatWith(errorFormatter);
-
-    if (!errors.isEmpty()) {
-        return res.status(422).send({
-            error: true,
-            msg: 'Please review the errors',
-            body: errors.mapped()
-        });
-    }
-    // error processing ends here
-
-
-    const { username_or_email, password } = req.body;
+    const { username_or_email = "", password = "" } = req.body;
 
     let foundUser
 
@@ -124,11 +106,11 @@ router.post('/login', [
         //  token generation
         const token = foundUser.generateAuthToken()
 
-        return res.header('Authorization', 'Bearer ' + token).send({
-            error: false, msg: "login successful",
+        return res.status(200).send({
+            error: false,
+            msg: "login successful",
             body: {
-                username: `${foundUser.username}`,
-                email: `${foundUser.email}`
+                jwt: token
             }
         })
 
