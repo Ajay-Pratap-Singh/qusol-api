@@ -19,18 +19,21 @@ const userSchema = new mongoose.Schema({
     isDeleted: Boolean,
     isVerified: Boolean,
     displayname: String,
-    coverImageUrl: String,
-    profileImageUrl: String,
+    coverImageUrl: {
+        type: String
+
+    },
+    profileImageUrl: {
+        type: String,
+        default: "https://image.flaticon.com/icons/svg/2922/2922506.svg"
+    },
     bio: String,
     contact: {
         country_code: String,
         phone_number: String
     },
-    address: {
-        country: String,
-        city: String,
-        zipcode: Number,
-        address_line: String,
+    location: {
+        type: String
     },
     education: [
         {
@@ -81,7 +84,7 @@ userSchema.pre('save', function (next) {
 userSchema.methods.generateAuthToken = function () {
     let user = this
     let token = jwt.sign(
-        { username: user.username, uid: user._id.toString(), displayname:user.displayname,profileImageUrl:user.profileImageUrl },
+        { username: user.username, uid: user._id.toString(), displayname: user.displayname, profileImageUrl: user.profileImageUrl },
         process.env.SECRET,
         { expiresIn: '1h' }
     )
