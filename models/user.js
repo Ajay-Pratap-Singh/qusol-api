@@ -83,10 +83,11 @@ userSchema.pre('save', function (next) {
 // token generation
 userSchema.methods.generateAuthToken = function () {
     let user = this
+    console.log(process.env.SECRET)
     let token = jwt.sign(
         { username: user.username, uid: user._id.toString(), displayname: user.displayname, profileImageUrl: user.profileImageUrl },
         process.env.SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '7 days' }
     )
     return token
 }

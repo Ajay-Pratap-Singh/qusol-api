@@ -91,6 +91,18 @@ router.get('/question/:id', [
 
 router.post('/question', verifyToken, [
     check('title', 'This field is required').notEmpty().trim()
+        .isLength({ min: 10, max: 140 }).withMessage("Lenght should be in range 10 to 140 characters"),
+    check('tags').optional().isArray().withMessage("tags should be an array")
+        .custom(value => {
+            if (value.length > 5) throw new Error("only 5 tags allowded")
+            return true
+        })
+        .customSanitizer(value => {
+            const newArr = value.filter(tag => tag.trim().length !== 0)
+            console.log(newArr);
+            return newArr
+
+        })
 ], (req, res) => {
 
     // error processing
@@ -105,13 +117,15 @@ router.post('/question', verifyToken, [
     }
     // error processing ends here
 
-    const { title, description = null, isAnonymous = false } = req.body
+    const { title, description = null, isAnonymous = false, tags = [] } = req.body
+    console.log(tags);
 
     const newQuestion = new Question({
         title,
         description,
         isAnonymous,
-        author: req.user
+        author: req.user,
+        tags
     })
 
     newQuestion.save().then((ques) => {
@@ -119,9 +133,7 @@ router.post('/question', verifyToken, [
         return res.status(200).send({
             error: false,
             msg: "question saved successfully",
-            body: {
-                ques: ques
-            }
+            body: ques
         })
 
 

@@ -123,7 +123,7 @@ router.post('/login', (req, res) => {
 
 router.get('/hello', verifyToken, (req, res) => {
     const username = req.user.username;
-    console.log(req.user._id);
+    console.log(req.user.uid);
     res.send({ msg: `hello, ${username}` })
 })
 

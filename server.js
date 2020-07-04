@@ -23,15 +23,11 @@ app.use((req, res, next) => {
     next();
 })
 
-console.log('1');
+
 app.use(authRoutes)
-console.log('2');
 app.use(commentRoutes)
-console.log('3');
 app.use(upvoteRoutes)
-console.log('4');
 app.use(quesRoutes)
-console.log('5');
 app.use(ansRoutes)
 
 app.get('/', (req, res) => {
