@@ -11,7 +11,7 @@ const upvoteRoutes = require('./routes/upvote')
 const quesRoutes = require('./routes/question')
 const ansRoutes = require('./routes/answer')
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8000
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))

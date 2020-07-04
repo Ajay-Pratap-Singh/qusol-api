@@ -11,12 +11,6 @@ const quesSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    answers: [
-        {
-            type: ObjectId,
-            ref: 'Answer'
-        }
-    ],
     isAnonymous: {
         type: Boolean,
         default: false
@@ -66,7 +60,9 @@ quesSchema.methods.toJSON = function () {
         title: quesObject.title,
         description: quesObject.description,
         tags: quesObject.tags,
-        categories: quesObject.categories
+        categories: quesObject.categories,
+        createdAt: quesObject.createdAt,
+        updatedAt: quesObject.updatedAt
     }
 }
 

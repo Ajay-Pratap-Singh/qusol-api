@@ -57,29 +57,21 @@ router.get('/question/:id', [
         });
     }
     // error processing ends here
-
-    const page = +req.query.page || 1;
-    const ANSWERS_PER_PAGE = 10;
-
-    let foundQuestion
+    const { id } = req.params
+    console.log(id);
 
     Question.findById(id).then(question => {
+        console.log(question);
+
         if (!question) {
-            return res.status(422).send({
+            return res.status(404).send({
                 error: true,
                 msg: "question not found"
             })
         }
-        foundQuestion = question
-        return Answer.find({ question: id }).skip((page - 1) * ANSWERS_PER_PAGE).limit(ANSWERS_PER_PAGE)
-    }).then((answers) => {
         return res.status(200).send({
             error: false,
-            body: {
-                question,
-                page: page,
-                answers: answers
-            }
+            body: question
         })
     }).catch((e) => {
         console.log(e);
