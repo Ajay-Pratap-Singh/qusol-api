@@ -67,12 +67,12 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.toJSON = function () {
     const user = this
-    const usersObject = user.toObject()
+    const userObject = user.toObject()
 
     return {
         uid: userObject._id,
         username: userObject.username,
-        email: usersObject.email,
+        email: userObject.email,
         displayname: userObject.displayname,
         coverImageUrl: userObject.coverImageUrl,
         profileImageUrl: userObject.profileImageUrl,

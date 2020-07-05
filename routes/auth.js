@@ -110,7 +110,7 @@ router.post('/login', (req, res) => {
             error: false,
             msg: "login successful",
             body: {
-                jwt: token
+                token
             }
         })
 
