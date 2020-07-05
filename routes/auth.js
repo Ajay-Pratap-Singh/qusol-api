@@ -121,10 +121,16 @@ router.post('/login', (req, res) => {
 
 })
 
-router.get('/hello', verifyToken, (req, res) => {
-    const username = req.user.username;
-    console.log(req.user.uid);
-    res.send({ msg: `hello, ${username}` })
+router.get('/profile', verifyToken, (req, res) => {
+
+    User.findById(req.user.uid).then(user => {
+        if (!user) {
+            res.status(404).send({ error: true, msg: "no user found" })
+        }
+        res.status(200).send({ error: false, body: user })
+    }).catch(e => {
+        console.log(e);
+    })
 })
 
 

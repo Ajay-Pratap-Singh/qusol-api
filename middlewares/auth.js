@@ -7,7 +7,7 @@ verifyToken = (req, res, next) => {
     console.log(headerBody)
 
     if (!headerBody) {
-        return res.status(401).send({ error: true, msg: "no token , authorization denied" });
+        return res.status(401).send({ error: true, msg: "no token, authorization denied" });
     }
 
     const token = headerBody.split(' ')[1]

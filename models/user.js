@@ -65,6 +65,26 @@ const userSchema = new mongoose.Schema({
         timestamps: true
     })
 
+userSchema.methods.toJSON = function () {
+    const user = this
+    const usersObject = user.toObject()
+
+    return {
+        uid: userObject._id,
+        username: userObject.username,
+        email: usersObject.email,
+        displayname: userObject.displayname,
+        coverImageUrl: userObject.coverImageUrl,
+        profileImageUrl: userObject.profileImageUrl,
+        bio: userObject.bio,
+        location: userObject.location,
+        interests: userObject.interests,
+        skills: userObject.skills,
+        createdAt: userObject.createdAt,
+        updatedAt: userObject.updatedAt
+    }
+}
+
 userSchema.pre('save', function (next) {
     let user = this;
     if (user.isModified('password')) {
