@@ -51,7 +51,7 @@ router.post('/register',
         if (!errors.isEmpty()) {
             return res.status(422).send({
                 error: true,
-                msg: 'Please review the errors',
+                msg: 'Registration failed',
                 body: errors.mapped()
             });
         }
@@ -68,9 +68,9 @@ router.post('/register',
 
             return res.status(201)
                 .send({
-                    error: false, msg: "registration successfull",
+                    error: false, msg: "Registration successful",
                     body: {
-                        jwt: token
+                        token
                     }
                 })
         }).catch((e) => {
@@ -108,7 +108,7 @@ router.post('/login', (req, res) => {
 
         return res.status(200).send({
             error: false,
-            msg: "login successful",
+            msg: "Login successful",
             body: {
                 token
             }

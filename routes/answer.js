@@ -31,7 +31,7 @@ router.get('/question/:id/answer', verifyToken,
         if (!errors.isEmpty()) {
             return res.status(422).send({
                 error: true,
-                msg: 'Please review the errors',
+                msg: 'could not get answers',
                 body: errors.mapped()
             });
         }
@@ -98,7 +98,7 @@ router.post('/answer', verifyToken, [
     if (!errors.isEmpty()) {
         return res.status(422).send({
             error: true,
-            msg: 'Please review the errors',
+            msg: 'could not save answer',
             body: errors.mapped()
         });
     }
