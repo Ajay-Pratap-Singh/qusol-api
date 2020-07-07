@@ -82,7 +82,7 @@ router.get('/question/:id', [
 // @POST /question
 
 router.post('/question', verifyToken, [
-    check('title', 'This field is required').notEmpty().trim()
+    check('title', 'Title can not be empty').notEmpty().trim()
         .isLength({ min: 10, max: 140 }).withMessage("Lenght should be in range 10 to 140 characters"),
     check('tags').optional().isArray().withMessage("tags should be an array")
         .custom(value => {
@@ -103,7 +103,7 @@ router.post('/question', verifyToken, [
     if (!errors.isEmpty()) {
         return res.status(422).send({
             error: true,
-            msg: 'Please review the errors',
+            msg: 'Question submission failed',
             body: errors.mapped()
         });
     }

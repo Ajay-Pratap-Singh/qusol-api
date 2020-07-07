@@ -11,6 +11,10 @@ const quesSchema = new mongoose.Schema({
     description: {
         type: String
     },
+    bestAnswer: {
+        author: userPublicProfile,
+        body: String
+    },
     isAnonymous: {
         type: Boolean,
         default: false
@@ -59,6 +63,7 @@ quesSchema.methods.toJSON = function () {
         isAnonymous: quesObject.isAnonymous,
         title: quesObject.title,
         description: quesObject.description,
+        bestAnswer: quesObject.bestAnswer,
         tags: quesObject.tags,
         categories: quesObject.categories,
         createdAt: quesObject.createdAt,

@@ -1,5 +1,6 @@
 const express = require('express')
 const Answer = require('../models/answer')
+const Question = require('../models/question')
 const verifyToken = require('../middlewares/auth')
 const router = express.Router()
 
@@ -13,7 +14,6 @@ const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
 
 
 //for getting all anwsers of a question
-//pagination afterwards
 router.get('/question/:id/answer', verifyToken,
     [
         param('id', 'No Id in request parameter')
@@ -93,6 +93,7 @@ router.post('/answer', verifyToken, [
 ], async (req, res) => {
 
     // error processing
+
     const errors = validationResult(req).formatWith(errorFormatter);
 
     if (!errors.isEmpty()) {
@@ -112,11 +113,20 @@ router.post('/answer', verifyToken, [
     })
     try {
         await ans.save()
+
         res.status(201).send({
             error: false,
             msg: 'Successfully answered',
             body: ans
         })
+
+        // if no bestanswer is present for a question then this answer will be bestAnswer
+        const doc = await Question.findOne({ _id: questionId })
+        if (!doc.bestAnswer.author && !doc.bestAnswer.body) {
+            await Question.updateOne({ _id: questionId }, { 'bestAnswer.author': req.user, 'bestAnswer.body': body }, { new: true })
+        }
+
+
     } catch (e) {
         res.status(400).send(e)
     }
