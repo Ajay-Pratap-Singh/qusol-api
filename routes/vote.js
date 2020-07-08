@@ -4,30 +4,13 @@ const router = express.Router()
 const { check, validationResult, param } = require('express-validator')
 const ObjectId = require('mongoose').Types.ObjectId;
 
-const Question = require('../models/question')
-const Answer = require('../models/answer')
-const Post = require('../models/post')
-const Article = require('../models/article')
-const Comment = require('../models/comment')
-const User = require('../models/user')
+const Vote = require('../models/vote')
 const verifyToken = require('../middlewares/auth');
-
-
 
 const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
     // return `${location}[${param}]: ${msg}`;
     return msg
 };
-
-
-const ModelResolve = {
-    'article': Article,
-    'answer': Answer,
-    'comment': Comment,
-    'post': Post,
-    'question': Question
-}
-
 
 // @POST /upvote
 router.post('/:type/:id/upvote',
@@ -42,7 +25,7 @@ router.post('/:type/:id/upvote',
             if (!ObjectId.isValid(value)) return Promise.reject('invalid item ID')
             return true
         })
-], (req, res) => {
+],async (req, res) => {
 
     // error processing starts here
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -56,37 +39,74 @@ router.post('/:type/:id/upvote',
     }
     // error processing ends here
 
-    const { id, type } = req.params
-
-    const Model = ModelResolve[type]
-
-    Model.update({ _id: id }, {
-        $push: {
-            upvotes: req.user
+    const { pid, parentType } = req.params
+    try {
+        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType },{value:true})
+        if (!vote) {
+             vote=new Vote({
+                user: req.user,
+                pid,
+                parentType,
+                value:true
+            })
+            await vote.save()
+            res.send(vote)
         }
-    }).then((result) => {
-        if (!result) {
-            return res.status(400).send({ error: true, msg: 'unable to upvote' })
-        }
-
-        return res.status(201).send({
-            error: false,
-            msg: `successfully upvoted ${type}`
-        })
-    }).catch(e => {
-        console.log(e);
-    })
-
-
+        res.send({...vote,value:true})
+    } catch (e) {
+        res.status(400).send(e)
+    }
 })
 
-// @DELETE /upvote
-router.delete('/:type/:id/upvote',
+// @POST /downvote
+router.post('/:type/:id/downvote',
     verifyToken, [
     param('type', 'type not presented in parameter, allowded types [article,question,answer,comment,post] ')
         .trim()
         .notEmpty()
         .isIn(['article', 'question', 'answer', 'comment', 'post']),
+    param('id', 'ID of the item is required')
+        .notEmpty()
+        .custom(value => {
+            if (!ObjectId.isValid(value)) return Promise.reject('invalid item ID')
+            return true
+        })
+],async (req, res) => {
+
+    // error processing starts here
+    const errors = validationResult(req).formatWith(errorFormatter);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).send({
+            error: true,
+            msg: 'Please review the errors',
+            body: errors.mapped()
+        });
+    }
+    // error processing ends here
+
+    const { pid, parentType } = req.params
+    try {
+        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType },{value:false})
+        if (!vote) {
+             vote=new Vote({
+                user: req.user,
+                pid,
+                parentType,
+                value:false
+            })
+            await vote.save()
+            res.send(vote)
+        }
+        res.send({...vote,value:false})
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+// @DELETE /upvote
+router.delete('/upvote/:id',
+    verifyToken, [
     param('id', 'ID of the item is required')
         .notEmpty()
         .custom(value => {
@@ -107,30 +127,17 @@ router.delete('/:type/:id/upvote',
     }
     // error processing ends here
 
-    const { id, type } = req.params
+    const {id} = req.params
 
-    const Model = ModelResolve[type]
-
-    Model.update({ _id: id }, {
-        $pull: {
-            upvotes: {
-                uid: req.user.uid
-            }
+    try {
+        const vote = await Vote.findOneAndDelete({ _id: id, user: req.user})
+        if (!vote) {
+            res.status(404).send()
         }
-    }).then((result) => {
-        if (!result) {
-            return res.status(400).send({ error: true, msg: 'unable to remove upvote' })
-        }
-
-        return res.status(201).send({
-            error: false,
-            msg: `successfully removed upvoted from ${type}`
-        })
-    }).catch(e => {
-        console.log(e);
-    })
-
-
+        res.send(vote)
+    } catch (e) {
+        res.status(500).send()
+    }
 })
 
 
