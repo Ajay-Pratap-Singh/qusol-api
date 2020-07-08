@@ -32,15 +32,7 @@ const quesSchema = new mongoose.Schema({
         default:0
     },
     tags: [
-        {
-            tagid: {
-                type: ObjectId,
-                ref: 'Tag'
-            },
-            text: {
-                type: String
-            }
-        }
+        String
     ],
     categories: [
         {

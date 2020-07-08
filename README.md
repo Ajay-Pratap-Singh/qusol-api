@@ -8,8 +8,7 @@ JSON object is expected in POST requests
 
 "username",
 "email",
-"password",
-"confirm_password"
+"password"
 
 ```
 
@@ -22,7 +21,8 @@ JSON object is expected in POST requests
 
 ```
 ## Note 
-after ```POST /login``` you will get response header named ``` Authorization``` with includes a string ```Bearer {token}```. while sending each request include a request header with same format. 
+after ```POST /login``` you will get jwt token in response body named ``` jwt``` .
+while sending requests to authorized routes include a request header with format ```Bearer {token}```. 
 
 
 

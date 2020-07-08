@@ -19,18 +19,21 @@ const userSchema = new mongoose.Schema({
     isDeleted: Boolean,
     isVerified: Boolean,
     displayname: String,
-    coverImageUrl: String,
-    profileImageUrl: String,
+    coverImageUrl: {
+        type: String
+
+    },
+    profileImageUrl: {
+        type: String,
+        default: "https://image.flaticon.com/icons/svg/2922/2922506.svg"
+    },
     bio: String,
     contact: {
         country_code: String,
         phone_number: String
     },
-    address: {
-        country: String,
-        city: String,
-        zipcode: Number,
-        address_line: String,
+    location: {
+        type: String
     },
     education: [
         {
@@ -62,6 +65,26 @@ const userSchema = new mongoose.Schema({
         timestamps: true
     })
 
+userSchema.methods.toJSON = function () {
+    const user = this
+    const userObject = user.toObject()
+
+    return {
+        uid: userObject._id,
+        username: userObject.username,
+        email: userObject.email,
+        displayname: userObject.displayname,
+        coverImageUrl: userObject.coverImageUrl,
+        profileImageUrl: userObject.profileImageUrl,
+        bio: userObject.bio,
+        location: userObject.location,
+        interests: userObject.interests,
+        skills: userObject.skills,
+        createdAt: userObject.createdAt,
+        updatedAt: userObject.updatedAt
+    }
+}
+
 userSchema.pre('save', function (next) {
     let user = this;
     if (user.isModified('password')) {
@@ -80,10 +103,11 @@ userSchema.pre('save', function (next) {
 // token generation
 userSchema.methods.generateAuthToken = function () {
     let user = this
+    console.log(process.env.SECRET)
     let token = jwt.sign(
-        { username: user.username, uid: user._id.toString(), displayname:user.displayname,profileImageUrl:user.profileImageUrl },
+        { username: user.username, uid: user._id.toString(), displayname: user.displayname, profileImageUrl: user.profileImageUrl },
         process.env.SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '7 days' }
     )
     return token
 }

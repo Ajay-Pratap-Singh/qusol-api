@@ -56,7 +56,7 @@ router.post('/:type/:id/upvote',
     }
     // error processing ends here
 
-    const { id, type } = req.body
+    const { id, type } = req.params
 
     const Model = ModelResolve[type]
 
@@ -107,7 +107,7 @@ router.delete('/:type/:id/upvote',
     }
     // error processing ends here
 
-    const { id, type } = req.body
+    const { id, type } = req.params
 
     const Model = ModelResolve[type]
 

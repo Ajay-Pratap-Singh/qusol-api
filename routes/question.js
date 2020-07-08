@@ -57,29 +57,21 @@ router.get('/question/:id', [
         });
     }
     // error processing ends here
-
-    const page = +req.query.page || 1;
-    const ANSWERS_PER_PAGE = 10;
-
-    let foundQuestion
+    const { id } = req.params
+    console.log(id);
 
     Question.findById(id).then(question => {
+        console.log(question);
+
         if (!question) {
-            return res.status(422).send({
+            return res.status(404).send({
                 error: true,
                 msg: "question not found"
             })
         }
-        foundQuestion = question
-        return Answer.find({ question: id }).skip((page - 1) * ANSWERS_PER_PAGE).limit(ANSWERS_PER_PAGE)
-    }).then((answers) => {
         return res.status(200).send({
             error: false,
-            body: {
-                question,
-                page: page,
-                answers: answers
-            }
+            body: question
         })
     }).catch((e) => {
         console.log(e);
@@ -90,7 +82,19 @@ router.get('/question/:id', [
 // @POST /question
 
 router.post('/question', verifyToken, [
-    check('title', 'This field is required').notEmpty().trim()
+    check('title', 'Title can not be empty').notEmpty().trim()
+        .isLength({ min: 10, max: 140 }).withMessage("Lenght should be in range 10 to 140 characters"),
+    check('tags').optional().isArray().withMessage("tags should be an array")
+        .custom(value => {
+            if (value.length > 5) throw new Error("only 5 tags allowded")
+            return true
+        })
+        .customSanitizer(value => {
+            const newArr = value.filter(tag => tag.trim().length !== 0)
+            console.log(newArr);
+            return newArr
+
+        })
 ], (req, res) => {
 
     // error processing
@@ -99,19 +103,21 @@ router.post('/question', verifyToken, [
     if (!errors.isEmpty()) {
         return res.status(422).send({
             error: true,
-            msg: 'Please review the errors',
+            msg: 'Question submission failed',
             body: errors.mapped()
         });
     }
     // error processing ends here
 
-    const { title, description = null, isAnonymous = false } = req.body
+    const { title, description = null, isAnonymous = false, tags = [] } = req.body
+    console.log(tags);
 
     const newQuestion = new Question({
         title,
         description,
         isAnonymous,
-        author: req.user
+        author: req.user,
+        tags
     })
 
     newQuestion.save().then((ques) => {
@@ -119,9 +125,7 @@ router.post('/question', verifyToken, [
         return res.status(200).send({
             error: false,
             msg: "question saved successfully",
-            body: {
-                ques: ques
-            }
+            body: ques
         })
 
 

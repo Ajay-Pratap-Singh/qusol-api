@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const { check, validationResult } = require('express-validator')
 
 const User = require('../models/user')
-const verifyToken= require('../middlewares/auth')
+const verifyToken = require('../middlewares/auth')
 
 
 const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
@@ -51,7 +51,7 @@ router.post('/register',
         if (!errors.isEmpty()) {
             return res.status(422).send({
                 error: true,
-                msg: 'Please review the errors',
+                msg: 'Registration failed',
                 body: errors.mapped()
             });
         }
@@ -67,12 +67,10 @@ router.post('/register',
             const token = user.generateAuthToken()
 
             return res.status(201)
-                .header('Authorization', 'Bearer ' + token)
                 .send({
-                    error: false, msg: "registration successfull",
+                    error: false, msg: "Registration successful",
                     body: {
-                        username: `${user.username}`,
-                        email: `${user.email}`
+                        token
                     }
                 })
         }).catch((e) => {
@@ -86,25 +84,9 @@ router.post('/register',
 
 // @POST 
 // User Login
-router.post('/login', [
-    check('username_or_email', 'missing username or email').trim().notEmpty(),
-    check('password', 'missing password').trim().notEmpty(),
-], (req, res) => {
+router.post('/login', (req, res) => {
 
-    // error processing
-    const errors = validationResult(req).formatWith(errorFormatter);
-
-    if (!errors.isEmpty()) {
-        return res.status(422).send({
-            error: true,
-            msg: 'Please review the errors',
-            body: errors.mapped()
-        });
-    }
-    // error processing ends here
-
-
-    const { username_or_email, password } = req.body;
+    const { username_or_email = "", password = "" } = req.body;
 
     let foundUser
 
@@ -124,11 +106,11 @@ router.post('/login', [
         //  token generation
         const token = foundUser.generateAuthToken()
 
-        return res.header('Authorization', 'Bearer ' + token).send({
-            error: false, msg: "login successful",
+        return res.status(200).send({
+            error: false,
+            msg: "Login successful",
             body: {
-                username: `${foundUser.username}`,
-                email: `${foundUser.email}`
+                token
             }
         })
 
@@ -139,10 +121,16 @@ router.post('/login', [
 
 })
 
-router.get('/hello', verifyToken, (req, res) => {
-    const username = req.user.username;
-    console.log(req.user._id);
-    res.send({ msg: `hello, ${username}` })
+router.get('/profile', verifyToken, (req, res) => {
+
+    User.findById(req.user.uid).then(user => {
+        if (!user) {
+            res.status(404).send({ error: true, msg: "no user found" })
+        }
+        res.status(200).send({ error: false, body: user })
+    }).catch(e => {
+        console.log(e);
+    })
 })
 
 

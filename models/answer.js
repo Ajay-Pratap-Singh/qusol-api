@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
-const ObjectId=mongoose.Schema.Types.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 const userPublicProfile = require('./userPublicProfile');
 
 const ansSchema = new mongoose.Schema({
-    author:userPublicProfile,
-    body:{
-        type:String,
-        required:true
+    author: userPublicProfile,
+    body: {
+        type: String,
+        required: true
     },
-    question:{
-        type:ObjectId,
-        ref:'Question'
+    questionId: {
+        type: ObjectId,
+        ref: 'Question'
     },
-    isAnonymous:{
-        type:Boolean,
-        default:false
+    isAnonymous: {
+        type: Boolean,
+        default: false
     },
-    isDeleted:{
-        type:Boolean,
-        default:false
+    isDeleted: {
+        type: Boolean,
+        default: false
     },
     upvoteCount: {
         type:Number,
@@ -29,7 +29,7 @@ const ansSchema = new mongoose.Schema({
         default:0
     },
 }, {
-    timestamps:true
+    timestamps: true
 });
 
 ansSchema.methods.toJSON = function () {
@@ -44,4 +44,4 @@ ansSchema.methods.toJSON = function () {
 
 const Answer = mongoose.model('Answer', ansSchema);
 
-module.exports=Answer;
+module.exports = Answer;
