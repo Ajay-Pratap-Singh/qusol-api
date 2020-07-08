@@ -11,12 +11,10 @@ const quesSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    answers: [
-        {
-            type: ObjectId,
-            ref: 'Answer'
-        }
-    ],
+    bestAnswer: {
+        author: userPublicProfile,
+        body: String
+    },
     isAnonymous: {
         type: Boolean,
         default: false
@@ -25,18 +23,14 @@ const quesSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    upvotes: [
-        userPublicProfile,
-        {
-            timestamps: true
-        }
-    ],
-    downvotes: [
-        userPublicProfile,
-        {
-            timestamps: true
-        }
-    ],
+    upvoteCount: {
+        type:Number,
+        default:0
+    },
+    downvoteCount: {
+        type:Number,
+        default:0
+    },
     tags: [
         {
             tagid: {
@@ -67,15 +61,11 @@ const quesSchema = new mongoose.Schema({
 quesSchema.methods.toJSON = function () {
     let ques = this
     let quesObject = ques.toObject()
-    return {
-        author: quesObject.author,
-        _id: quesObject._id,
-        isAnonymous: quesObject.isAnonymous,
-        title: quesObject.title,
-        description: quesObject.description,
-        tags: quesObject.tags,
-        categories: quesObject.categories
-    }
+    delete quesObject.isDeleted
+    if(quesObject.isAnonymous)
+        delete quesObject.author
+    delete quesObject.isAnonymous
+    return quesObject
 }
 
 const Question = mongoose.model('Question', quesSchema);

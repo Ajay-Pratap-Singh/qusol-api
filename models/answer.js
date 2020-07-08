@@ -20,18 +20,14 @@ const ansSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    upvotes:[
-        userPublicProfile,
-        {
-            timestamps:true
-        }
-    ],
-    downvotes:[
-        userPublicProfile,
-        {
-            timestamps:true
-        }
-    ]
+    upvoteCount: {
+        type:Number,
+        default:0
+    },
+    downvoteCount: {
+        type:Number,
+        default:0
+    },
 }, {
     timestamps:true
 });
@@ -39,13 +35,11 @@ const ansSchema = new mongoose.Schema({
 ansSchema.methods.toJSON = function () {
     const ans = this
     const ansObject = ans.toObject()
-
     delete ansObject.isDeleted
     if(ansObject.isAnonymous)
         delete ansObject.author
     delete ansObject.isAnonymous
-
-    return userObject
+    return ansObject
 }
 
 const Answer = mongoose.model('Answer', ansSchema);
