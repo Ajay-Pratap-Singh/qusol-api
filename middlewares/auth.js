@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 verifyToken = (req, res, next) => {
     const headerBody = req.header('Authorization')
-    console.log(headerBody)
+
 
     if (!headerBody) {
         return res.status(401).send({ error: true, msg: "no token, authorization denied" });

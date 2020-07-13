@@ -12,6 +12,10 @@ const ansSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'Question'
     },
+    isPublished: {
+        type: Boolean,
+        default: false
+    },
     isAnonymous: {
         type: Boolean,
         default: false
@@ -21,12 +25,12 @@ const ansSchema = new mongoose.Schema({
         default: false
     },
     upvoteCount: {
-        type:Number,
-        default:0
+        type: Number,
+        default: 0
     },
     downvoteCount: {
-        type:Number,
-        default:0
+        type: Number,
+        default: 0
     },
 }, {
     timestamps: true
@@ -36,7 +40,7 @@ ansSchema.methods.toJSON = function () {
     const ans = this
     const ansObject = ans.toObject()
     delete ansObject.isDeleted
-    if(ansObject.isAnonymous)
+    if (ansObject.isAnonymous)
         delete ansObject.author
     delete ansObject.isAnonymous
     return ansObject

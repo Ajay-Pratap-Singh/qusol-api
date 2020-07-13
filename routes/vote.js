@@ -25,7 +25,7 @@ router.post('/:type/:id/upvote',
             if (!ObjectId.isValid(value)) return Promise.reject('invalid item ID')
             return true
         })
-],async (req, res) => {
+], async (req, res) => {
 
     // error processing starts here
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -41,18 +41,18 @@ router.post('/:type/:id/upvote',
 
     const { pid, parentType } = req.params
     try {
-        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType },{value:true})
+        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType }, { value: true })
         if (!vote) {
-             vote=new Vote({
+            vote = new Vote({
                 user: req.user,
                 pid,
                 parentType,
-                value:true
+                value: true
             })
             await vote.save()
             res.send(vote)
         }
-        res.send({...vote,value:true})
+        res.send({ ...vote, value: true })
     } catch (e) {
         res.status(400).send(e)
     }
@@ -71,7 +71,7 @@ router.post('/:type/:id/downvote',
             if (!ObjectId.isValid(value)) return Promise.reject('invalid item ID')
             return true
         })
-],async (req, res) => {
+], async (req, res) => {
 
     // error processing starts here
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -87,18 +87,18 @@ router.post('/:type/:id/downvote',
 
     const { pid, parentType } = req.params
     try {
-        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType },{value:false})
+        let vote = await Vote.findOneAndUpdate({ user: req.user, pid, parentType }, { value: false })
         if (!vote) {
-             vote=new Vote({
+            vote = new Vote({
                 user: req.user,
                 pid,
                 parentType,
-                value:false
+                value: false
             })
             await vote.save()
             res.send(vote)
         }
-        res.send({...vote,value:false})
+        res.send({ ...vote, value: false })
     } catch (e) {
         res.status(400).send(e)
     }
@@ -113,7 +113,7 @@ router.delete('/upvote/:id',
             if (!ObjectId.isValid(value)) return Promise.reject('invalid item ID')
             return true
         })
-], (req, res) => {
+], async (req, res) => {
 
     // error processing starts here
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -127,10 +127,10 @@ router.delete('/upvote/:id',
     }
     // error processing ends here
 
-    const {id} = req.params
+    const { id } = req.params
 
     try {
-        const vote = await Vote.findOneAndDelete({ _id: id, user: req.user})
+        const vote = await Vote.findOneAndDelete({ _id: id, user: req.user })
         if (!vote) {
             res.status(404).send()
         }

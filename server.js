@@ -7,7 +7,7 @@ if (app.get('env') == 'development') { require('dotenv').config(); }
 
 const authRoutes = require('./routes/auth')
 const commentRoutes = require('./routes/comment')
-const upvoteRoutes = require('./routes/upvote')
+const voteRoutes = require('./routes/vote')
 const quesRoutes = require('./routes/question')
 const ansRoutes = require('./routes/answer')
 
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(authRoutes)
 app.use(commentRoutes)
-app.use(upvoteRoutes)
+app.use(voteRoutes)
 app.use(quesRoutes)
 app.use(ansRoutes)
 
