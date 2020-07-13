@@ -19,16 +19,14 @@ const commentSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    upvotes:[
-        userPublicProfile,{
-            timestamps:true
-        }
-    ],
-    downvotes:[
-        userPublicProfile,{
-            timestamps:true
-        }
-    ]
+    upvoteCount: {
+        type:Number,
+        default:0
+    },
+    downvoteCount: {
+        type:Number,
+        default:0
+    },
 }, {
     timestamps:true
 });
