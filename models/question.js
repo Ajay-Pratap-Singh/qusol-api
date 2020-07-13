@@ -13,7 +13,13 @@ const quesSchema = new mongoose.Schema({
     },
     bestAnswer: {
         author: userPublicProfile,
-        body: String
+        body: String,
+        questionId: {
+            type: ObjectId,
+            ref: 'Question'
+        },
+        upvoteCount: Number,
+        downvoteCount: Number,
     },
     isAnonymous: {
         type: Boolean,
