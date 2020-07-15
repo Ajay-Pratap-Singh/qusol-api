@@ -8,7 +8,7 @@ const ansSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    questionId: {
+    question: {
         type: ObjectId,
         ref: 'Question'
     },

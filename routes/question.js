@@ -16,12 +16,17 @@ const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
     return msg
 };
 
+
+
+
+
+
 // @GET /question
 router.get('/question', (req, res) => {
     const page = +req.query.page || 1;
     const QUESTIONS_PER_PAGE = 10;
 
-    Question.find().skip((page - 1) * QUESTIONS_PER_PAGE).limit(QUESTIONS_PER_PAGE)
+    Question.find().skip((page - 1) * QUESTIONS_PER_PAGE).limit(QUESTIONS_PER_PAGE).populate('bestAnswer')
         .then(questions => {
             res.status(200).send({
                 error: false,
@@ -35,8 +40,13 @@ router.get('/question', (req, res) => {
         })
 })
 
-// @GET /question/:id
 
+
+
+
+
+
+// @GET /question/:id
 router.get('/question/:id', [
     param('id', 'No id in request parameter')
         .notEmpty()
@@ -79,8 +89,13 @@ router.get('/question/:id', [
 
 })
 
-// @POST /question
 
+
+
+
+
+
+// @POST /question
 router.post('/question', verifyToken, [
     check('title', 'Title can not be empty').notEmpty().trim()
         .isLength({ min: 10, max: 140 }).withMessage("Lenght should be in range 10 to 140 characters"),

@@ -26,7 +26,7 @@ router.get('/question/:id/answers', async (req, res) => {
     const ANSWERS_PER_PAGE = 10;
 
     try {
-        const answers = await Answer.find({ questionId: ObjectId(id), isDeleted: false, isPublished: true }).skip((page - 1) * ANSWERS_PER_PAGE).limit(ANSWERS_PER_PAGE)
+        const answers = await Answer.find({ question: ObjectId(id), isDeleted: false, isPublished: true }).skip((page - 1) * ANSWERS_PER_PAGE).limit(ANSWERS_PER_PAGE)
 
         res.status(200).send({
             error: false,
@@ -51,16 +51,21 @@ router.get('/question/:id/answers', async (req, res) => {
 // ==============================================
 router.get('/answer/:answerId', async (req, res) => {
     const _id = req.params.answerId
-
     try {
         const ans = await Answer.findOne({ _id: ObjectId(_id), isDeleted: false, isPublished: true })
         if (!ans) {
-            return res.status(404).send()
+            res.status(404).send()
         }
-        res.status(200).send({ error: false, body: ans })
+        await ans.populate('question').execPopulate()
+        return res.status(200).send({
+            error: false,
+            body: ans
+        })
     } catch (e) {
+        console.log(e);
         res.status(500).send()
     }
+
 })
 
 
@@ -71,12 +76,12 @@ router.get('/answer/:answerId', async (req, res) => {
 // ==============================================
 // @GET /question/:questionId/answer   get draft of a user for a particular question
 // ==============================================
-router.get('/question/:id/answer', verifyToken, async (req, res) => {
+router.get('/question/:questionId/answer', verifyToken, async (req, res) => {
 
-    const { id } = req.params
+    const { questionId } = req.params
 
     try {
-        const ans = await Answer.findOne({ questionId: ObjectId(id), author: req.user })
+        const ans = await Answer.findOne({ question: ObjectId(questionId), author: req.user })
         if (!ans) {
             return res.status(404).send()
         }
@@ -103,7 +108,7 @@ router.put('/question/:id/answer/draft', verifyToken, [
 
     try {
         await Answer.findOneAndUpdate(
-            { questionId: ObjectId(req.params.id), author: req.user },
+            { question: ObjectId(req.params.id), author: req.user },
             { body, isPublished },
             { upsert: true }
         )
@@ -146,10 +151,11 @@ router.post('/answer', verifyToken, [
         });
     }
     // error processing ends here
+
     const { body, isAnonymous = false, questionId, isPublished = true } = req.body
 
     const ans = new Answer({
-        questionId,
+        question: questionId,
         body,
         author: req.user,
         isAnonymous,
@@ -157,6 +163,14 @@ router.post('/answer', verifyToken, [
     })
 
     try {
+        const existingAnswer = await Answer.findOne({ question: ObjectId(questionId), author: req.user })
+        if (existingAnswer) {
+            return res.status(302).send({
+                error: false,
+                msg: 'You have already answered this question',
+                body: existingAnswer
+            })
+        }
         await ans.save()
 
         res.status(201).send({
@@ -167,8 +181,8 @@ router.post('/answer', verifyToken, [
 
         // if no bestanswer is present for a question then this answer will be bestAnswer
         const doc = await Question.findOne({ _id: questionId })
-        if (!doc.bestAnswer.author && !doc.bestAnswer.body) {
-            await Question.updateOne({ _id: questionId }, { 'bestAnswer.author': req.user, 'bestAnswer.body': body }, { new: true })
+        if (!doc.bestAnswer) {
+            await Question.updateOne({ _id: questionId }, { bestAnswer: ans._id }, { new: true })
         }
 
 
