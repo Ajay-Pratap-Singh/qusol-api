@@ -163,7 +163,7 @@ router.post('/answer', verifyToken, [
     })
 
     try {
-        const existingAnswer = await Answer.findOne({ question: ObjectId(questionId), author: req.user })
+        const existingAnswer = await Answer.findOne({ question: ObjectId(questionId), isDeleted: false, author: req.user })
         if (existingAnswer) {
             return res.status(302).send({
                 error: false,
