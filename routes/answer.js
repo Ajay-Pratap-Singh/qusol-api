@@ -81,7 +81,7 @@ router.get('/question/:questionId/answer', verifyToken, async (req, res) => {
     const { questionId } = req.params
 
     try {
-        const ans = await Answer.findOne({ question: ObjectId(questionId), author: req.user })
+        const ans = await Answer.findOne({ question: ObjectId(questionId), isDeleted: false, author: req.user })
         if (!ans) {
             return res.status(404).send()
         }
@@ -200,24 +200,20 @@ router.post('/answer', verifyToken, [
 // @PATCH /answer/:id  to edit an answer to a question [authentication needed]
 // ==============================================
 router.patch('/answer/:id', verifyToken, async (req, res) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['body', 'isAnonymous']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' })
-    }
+    const { body } = req.body
 
     try {
-        const ans = await Answer.findOne({ _id: req.params.id, owner: req.user, isDeleted: false })
+        const ans = await Answer.findOneAndUpdate(
+            { _id: req.params.id, author: req.user, isDeleted: false },
+            { body },
+            { new: true }
+        )
 
         if (!ans) {
             return res.status(404).send()
         }
 
-        updates.forEach((update) => ans[update] = req.body[update])
-        await ans.save()
-        res.send(ans)
+        res.status(200).send({ error: false, body: ans })
     } catch (e) {
         res.status(400).send(e)
     }
@@ -238,7 +234,7 @@ router.delete('/answer/:id', verifyToken, async (req, res) => {
         if (!ans) {
             res.status(404).send()
         }
-        res.send(ans)
+        res.status(200).send()
     } catch (e) {
         res.status(500).send()
     }
